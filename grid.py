@@ -37,12 +37,14 @@ def loadSpriteSheet(sheet, row, col, newSize, size):
 class Grid:
     def __init__(self, rows, columns, size, main):
         self.color = Color()
-
+        
         self.GAME = main
         self.y = rows
         self.x = columns
         self.size = size
         token_size = (size[0]*7/8, size[1]*7/8)
+
+        # Load token images and transition images.
         self.whitetoken = loadImages('assets/WhiteToken_New.png', token_size)
         self.blacktoken = loadImages('assets/BlackToken_New.png', token_size)
         self.transitionWhiteToBlack = [loadImages(f'assets/BlackToWhite{i}_New.png', self.size) for i in range(1, 4)]
@@ -50,13 +52,17 @@ class Grid:
        
         self.tokens = {}
 
+        # Load the grid background.
         self.gridBg = self.createbgimg()
 
+        # Grid for logical use.
         self.gridLogic = self.regenGrid(self.y, self.x)
 
+        # Score of two players.
         self.player1Score = 0
         self.player2Score = 0
-        
+
+        # List of buttons in the grid.
         self.play_button = Button('Play', 460, 380)
         self.quit_menu_button = Button('Quit', 460, 480)
         self.resume_button = Button('Resume', 420, 350)
@@ -84,11 +90,15 @@ class Grid:
         self.depth7_button = Button('7', 700, 400)
         self.depth8_button = Button('8', 700, 500)
 
+        # Font used.
         self.font = pygame.font.SysFont('Candara', 40, True, False)
 
 
         
     def newGame(self):
+        '''Reset the game.'''
+
+        # Reset some attributes of the game
         self.GAME.time = pygame.time.get_ticks()
         self.GAME.opponentSelected = False
         self.GAME.depthSelected = False
@@ -98,11 +108,16 @@ class Grid:
         self.GAME.passGame = False
         self.GAME.currentPlayer = -1
         self.GAME.playerSide = -1
+
+        # Clear the tokens and regenerate the logical grid.
         self.tokens.clear()
         self.gridLogic = self.regenGrid(self.y, self.x)
+        
         pygame.time.delay(100)
     
-    def createbgimg(self):  
+    def createbgimg(self):
+        '''Create background for the grid.'''
+        
         image = pygame.Surface((730, 730))
         color = self.color.grey
         image.fill(color)
@@ -124,7 +139,8 @@ class Grid:
         return image
 
     def regenGrid(self, rows, columns):
-        """generate an empty grid for logic use"""
+        """Generate a grid of the starting position for logical use."""
+        
         grid = []
         for y in range(rows):
             line = []
@@ -139,6 +155,8 @@ class Grid:
         return grid
 
     def calculatePlayerScore(self, player):
+        '''Calculate the scores of 2 players.'''
+        
         score = 0
         for row in self.gridLogic:
             for col in row:
@@ -147,10 +165,14 @@ class Grid:
         return score
 
     def drawScore(self, player, score):
+        '''Draw the scores of 2 players on the screen.'''
+        
         textImg = self.font.render(f'{player} : {score}', 1, self.color.purple)
         return textImg
 
     def drawMenu(self, window):
+        '''Draw the main menu screen.'''
+        
         if self.play_button.draw(window):
             self.GAME.menu = True
             pygame.time.delay(100)
@@ -159,6 +181,8 @@ class Grid:
             return
 
     def drawOpponentSelection(self, window):
+        '''Draw the opponent selection screen.'''
+        
         description = self.font.render('Choose your opponent!', 1, self.color.purple)
         window.blit(description, (300, 100))
         if self.CoinParity_button.draw(window):
@@ -193,6 +217,8 @@ class Grid:
             self.GAME.opponentSelected = True
 
     def drawSideSelection(self, window):
+        '''Draw the side selection screen.'''
+        
         description = self.font.render('Choose your color!', 1, self.color.purple)
         window.blit(description, (330, 100))
         if self.black_button.draw(window):
@@ -203,6 +229,8 @@ class Grid:
             self.GAME.sideSelected = True
 
     def drawDepthSelection(self, window):
+        '''Draw the depth selection screen.'''
+        
         description = self.font.render('Choose the depth of your opponent!', 1, self.color.purple)
         window.blit(description, (200, 100))
         if self.depth1_button.draw(window):
@@ -231,6 +259,8 @@ class Grid:
             self.GAME.depthSelected = True
 
     def endScreen(self):
+        '''Draw the game over screen.'''
+        
         if self.GAME.gameOver:
             if self.GAME.playerSide == -1:
                 player_score = self.player1Score
@@ -238,6 +268,8 @@ class Grid:
             else:
                 player_score = self.player2Score
                 computer_score = self.player1Score
+        
+            # Print the game over screen.    
             endScreenImg = pygame.Surface((400, 240))
             endScreenImg.fill(self.color.red)
             endText = self.font.render(f'{"Congrats, You Won!!" if player_score > computer_score else "Bad Luck, You Lost" if player_score < computer_score else "       Draw       "}', 1, self.color.lightPink)
@@ -248,6 +280,8 @@ class Grid:
         return endScreenImg
 
     def drawPauseScreen(self, window):
+        '''Draw the pause screen.'''
+        
         description = self.font.render('Game Paused', 1, self.color.purple)
         window.blit(description, (380, 100))
         if self.resume_button.draw(window):
@@ -260,7 +294,8 @@ class Grid:
             self.GAME.RUN = False 
 
     def passScreen(self):
-    
+        '''Draw the pass button.'''
+        
         passScreenImg = pygame.Surface((80, 40))
         passScreenImg.fill(self.color.pinkBg)
         passGameText = self.font.render('Pass', 1, self.color.purple)
@@ -268,7 +303,9 @@ class Grid:
         return passScreenImg            
 
     def drawGrid(self, window):
-        # Draw the menu if the game is not started yet
+        '''Draw everything (grid, tokens, buttons) on the screen.'''
+        
+        # Draw the menu if the game has not started yet
         if not self.GAME.menu:
             self.drawMenu(window)
             return
@@ -293,14 +330,18 @@ class Grid:
             self.drawPauseScreen(window)
             return
 
+        # Draw the grid background.
         window.blit(self.gridBg, (0, 0))
 
+        # Draw the score of 2 players.
         window.blit(self.drawScore('Black', self.player1Score), (775, 100))
         window.blit(self.drawScore('White', self.player2Score), (775, 200))
 
+        # Draw the tokens.
         for token in self.tokens.values():
             token.draw(window)
 
+        # Indicate all available moves.
         availMoves = self.findAvailMoves(self.gridLogic, self.GAME.currentPlayer)
 
         # Indicate the last move on the board.
@@ -323,11 +364,24 @@ class Grid:
         if self.pause_button.draw(window):
             self.GAME.paused = True
 
+        # Draw the game over screen if the game is over.
         if self.GAME.gameOver:            
             window.blit(self.endScreen(), (200, 280))
 
+        # Draw the pass button if a player has no moves available.
         if self.GAME.passGame:            
             window.blit(self.passScreen(), (775, 300))
+
+    def printGameLogicBoard(self):
+        '''Print the logical grid to the terminal.'''
+        
+        print('  | A | B | C | D | E | F | G | H |')
+        for i, row in enumerate(self.gridLogic):
+            line = f'{i} |'.ljust(3, " ")
+            for item in row:
+                line += f"{item}".center(3, " ") + '|'
+            print(line)
+        print()
 
     def findValidCells(self, grid, curPlayer):
         """Performs a check to find all empty cells that are adjacent to opposing player"""
@@ -352,6 +406,8 @@ class Grid:
         return validCellToClick
 
     def swappableTiles(self, x, y, grid, player):
+        '''Return list of tiles that can be swapped after a move.'''
+        
         surroundCells = directions(x, y)
         if len(surroundCells) == 0:
             return []
@@ -385,7 +441,9 @@ class Grid:
         return swappableTiles
 
     def findAvailMoves(self, grid, currentPlayer):
-        """Takes the list of validCells and checks each to see if playable"""
+        """Takes the list of validCells and checks each to see if playable.
+        Return the list of available moves."""
+        
         validCells = self.findValidCells(grid, currentPlayer)
         playableCells = []
 
@@ -402,11 +460,15 @@ class Grid:
         return playableCells
 
     def insertToken(self, grid, curplayer, y, x):
+        '''Insert a token.'''
+        
         tokenImage = self.whitetoken if curplayer == 1 else self.blacktoken
         self.tokens[(y, x)] = Token(curplayer, y, x, tokenImage, self.GAME)
         grid[y][x] = self.tokens[(y, x)].player
 
     def animateTransitions(self, cell, player):
+        '''Animate the transitions when swapping tiles.'''
+        
         if player == 1:
             self.tokens[(cell[0], cell[1])].transition(self.transitionWhiteToBlack, self.whitetoken)
         else:
