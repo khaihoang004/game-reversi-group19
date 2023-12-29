@@ -18,6 +18,8 @@ First, clone this repository to access our work:
 ```
 git clone https://github.com/ahihidongok111/game-reversi-group19.git
 ```
+**Please remember to change directory to the folder you've just cloned.**
+
 To install necessary packages, run:
 ```
 pip install -r requirements.txt
