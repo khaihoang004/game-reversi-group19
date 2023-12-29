@@ -27,7 +27,7 @@ For running the main program, run the following script:
 python main.py
 ```
 
-## Instruction
+## Instructions
 Our Reversi/Othello program supports multiple heuristics for evaluating board positions, namely **Coin Parity**, **Corners**, **Mobility**, **Stability**, **Everything**, **E-coins**, **E-corner**, **E-mobility** and **E-stability**. You can choose your desired heuristic in the heuristic selection menu in our program.
 
 Furthermore, you can also choose the depth of the opponent (from **1** to **8**). **Please be aware that selecting a high depth (greater than or equal to 7) may lead to the program's unresponsiveness.**
