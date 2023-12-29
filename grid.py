@@ -189,7 +189,7 @@ class Grid:
             self.GAME.heuristic = self.GAME.computerPlayer.E_stability
             self.GAME.opponentSelected = True
         if self.Everything_button.draw(window):
-            self.GAME.heuristic = self.GAME.computerPlayer.EverythingRate
+            self.GAME.heuristic = self.GAME.computerPlayer.Everything
             self.GAME.opponentSelected = True
 
     def drawSideSelection(self, window):
